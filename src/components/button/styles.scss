@@ -1,0 +1,65 @@
+.button {
+    display: inline-block;
+    cursor: pointer;
+}
+
+.alignLeft {
+    width: 100%;
+    text-align: left;
+}
+
+.alignCenter {
+    width: 100%;
+    text-align: center;
+}
+
+.alignRight {
+    width: 100%;
+    text-align: right;
+}
+
+.positiontop {
+    margin: 0 0 20px 0;
+}
+
+.positionMiddle {
+    margin: 20px 0;
+}
+
+.positionBottom {
+    margin: 20px 0 0 0;
+}
+
+.typeStrava {
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    height: 40px;
+    margin: 0 auto;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #fff09c;
+    background-size: 193px 46px;
+    box-shadow: 1px 1px 0 #fdb2bd;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.typePrimary {
+    font-size: 14px;
+    font-weight: bold;
+    display: flex;
+    height: 40px;
+    margin: 0 auto;
+    letter-spacing: .03em;
+    text-transform: uppercase;
+    color: #fff;
+    background-color: #fff09c;
+    background-size: 193px 46px;
+    box-shadow: 1px 1px 0 #fdb2bd;
+
+    align-items: center;
+    justify-content: center;
+}

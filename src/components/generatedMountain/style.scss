@@ -1,0 +1,24 @@
+.generatedMountainContainer {
+    position: absolute;
+    top: -66px;
+    overflow: hidden;
+    width: 100vw;
+    height: 100%;
+    svg path.line {
+        position: absolute;
+        left: 0;
+
+        fill: #d494a0;
+    }
+}
+
+.chart {
+    width: calc(50000px - 450px);
+    height: 100%;
+}
+
+.tri {
+    transform: rotate(180deg) translate(0, 8px);
+
+    fill: #fff;
+}

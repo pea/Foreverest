@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,600,700');
+@import url('https://use.fontawesome.com/releases/v5.0.8/css/all.css');
+
+body {
+    overflow: hidden;
+    width: 100vw;
+    margin: 0;
+    color: #fff;
+}
+
+* {
+    font-family: 'Open Sans', sans-serif;
+
+    -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+}
+
+.wrapper {
+    height: 100vh;
+    padding: 60px 0 0 0;
+    background: linear-gradient(to bottom, #ffd497 0%, #fbc3d5 100%);
+}
