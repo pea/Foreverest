@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { curveBasis, d3, easeExpOut, easeLinear, line, range, scaleLinear, select, symbol, symbolTriangle } from 'd3'
 
+import Hammer from 'hammerjs'
 import ReactDOM from 'react-dom'
 import { connect } from 'react-redux'
 import { loadApp } from 'actions/app'
@@ -145,17 +146,22 @@ export class GeneratedMountain extends Component {
             return translateCameraAlong(d, path.node())()
           })
       })
-      
-      document.addEventListener("touchmove", function (e) {
-        cameraPointer = cameraPointer.data([cameraData += (e.touches[0].clientX / 100000)])
+
+      new Hammer(container).on('panleft panright', function(e) {
+        if (e.type === 'panleft') {
+          cameraPointer = cameraPointer.data([cameraData += (e.distance/ 100000)])
+        } else {
+          cameraPointer = cameraPointer.data([cameraData -= (e.distance / 100000)])
+        }
         cameraData = cameraData < 0 ? 0 : cameraData
         cameraPointer
           .transition()
           .duration(0)
-          .attrTween("transform", function (d) {
+          .attrTween('transform', function (d) {
             return translateCameraAlong(d, path.node())()
-          })
-      })
+          }) 
+      });
+      
     }
   
     transition()

@@ -11,7 +11,8 @@
         fill: #d494a0;
     }
     svg {
-        transition: transform .1s;
+        transition: transform 1s;
+        transition-timing-function: cubic-bezier(.075, .820, .165, 1.000);
     }
 }
 
