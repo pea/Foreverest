@@ -145,6 +145,17 @@ export class GeneratedMountain extends Component {
             return translateCameraAlong(d, path.node())()
           })
       })
+      
+      document.addEventListener("touchmove", function (e) {
+        cameraPointer = cameraPointer.data([cameraData += (e.touches[0].clientX / 100000)])
+        cameraData = cameraData < 0 ? 0 : cameraData
+        cameraPointer
+          .transition()
+          .duration(0)
+          .attrTween("transform", function (d) {
+            return translateCameraAlong(d, path.node())()
+          })
+      })
     }
   
     transition()
