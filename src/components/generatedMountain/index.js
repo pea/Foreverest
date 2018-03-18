@@ -16,11 +16,12 @@ type Props = {
 export class GeneratedMountain extends Component {
   constructor(props){
     super(props)
+    this.init(this.props.percentage)    
   }
 
   componentDidMount() {
     this.props.dispatch(loadApp())
-    this.init(this.props.percentage)
+    this.init(this.props.percentage)    
   }
 
   props: Props
@@ -33,10 +34,12 @@ export class GeneratedMountain extends Component {
 
   init(percentage) {
     if (typeof percentage === 'undefined') return
-    
-    var margin = { top: 0, right: 0, bottom: 0, left: 0 },
-      width = 50000 - margin.left - margin.right,
-      height = window.screen.height - 66 - margin.top - margin.bottom,
+
+    const container = ReactDOM.findDOMNode(this.refs.container)
+
+    var 
+      width = 100000,
+      height = window.screen.height * 10,
 
       x = scaleLinear()
         .domain([0, 1000])
@@ -52,7 +55,7 @@ export class GeneratedMountain extends Component {
           return Math.random() * (max - min) + min
         }
 
-        return getRandomArbitrary(value + 1, value + 5) / 100
+        return getRandomArbitrary(value + 1, value + 5) / 1000
       })
 
     data[0] = 0
@@ -67,29 +70,35 @@ export class GeneratedMountain extends Component {
 
     const svg = select(ReactDOM.findDOMNode(this.refs.chart))
       .append("svg")
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom)
+      .attr('width', width)
+      .attr('height', height)
 
 
     const g = svg.append("g")
-      .attr('transform', "translate(" + margin.left + "," + margin.top + ")")
+    .attr('transform', "translate(0,0)")
 
     const path = g.append("path")
       .datum(data)
       .attr('class', styles.line)
+      .attr('ref', 'line')
       .attr('d', theline)
 
-    const value = percentage / 100 * 2 / 100
+    let value = percentage / 100 * 2 / 100
 
-    scrollToWithAnimation(
-      ReactDOM.findDOMNode(this.refs.container),
-      'scrollLeft',
-      50000 / 4500 * percentage - (window.screen.width / 2),
-      1000,
-      'easeOutExpo'
-    )
+    // scrollToWithAnimation(
+    //   ReactDOM.findDOMNode(this.refs.container),
+    //   'scrollLeft',
+    //   50000 / 4500 * percentage - (window.screen.width / 2),
+    //   1000,
+    //   'easeOutExpo'
+    // )
 
-    const pointer = g.append("g")
+    let cameraData = 0
+
+    let cameraPointer = g.append("g")
+      .data([cameraData])
+
+    let pointer = g.append("g")
       .data([value])
 
     // Disable for now
@@ -102,20 +111,45 @@ export class GeneratedMountain extends Component {
       .attr("class", styles.tri)
       .attr('d', symbol().type(symbolTriangle).size(100)())
 
+    const camera = cameraPointer
+      .append("path")
+      .attr("class", styles.camera)
+      .attr('d', symbol().type(symbolTriangle).size(100)())
+
     let direction = -1,
         atLength
 
     function transition() {
-        direction *= -1
-        pointer.transition()
-            .duration(3000)
-            .ease(easeExpOut)
-            .attrTween("transform", function (d) {
-                return translateAlong(d, path.node())()
-            })
-    }
+      direction *= -1
+      pointer.transition()
+        .duration(3000)
+        .ease(easeExpOut)
+        .attrTween("transform", function (d) {
+            return translateAlong(d, path.node())()
+        })
 
+      cameraPointer
+        .transition()
+        .duration(0)
+        .attrTween("transform", function (d) {
+          return translateCameraAlong(d, path.node())()
+        })
+      
+      document.addEventListener("wheel", function (e) {
+        cameraPointer = cameraPointer.data([cameraData += (e.deltaX / 100000)])
+        cameraData = cameraData < 0 ? 0 : cameraData
+        cameraPointer
+          .transition()
+          .duration(0)
+          .attrTween("transform", function (d) {
+            return translateCameraAlong(d, path.node())()
+          })
+      })
+    }
+  
     transition()
+
+    ReactDOM.findDOMNode(this.refs.container).scrollTop = '99999'
 
     function translateAlong(d, path) {
         var l = path.getTotalLength() * d
@@ -125,6 +159,27 @@ export class GeneratedMountain extends Component {
                 var p1 = path.getPointAtLength(atLength),
                     p2 = path.getPointAtLength((atLength) + direction),
                     angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
+                return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
+            }
+        }
+    }
+
+    function translateCameraAlong(d, path) {
+        var l = path.getTotalLength() * d
+        return function (d, i, a) {
+            return function (t) {
+                atLength = direction === 1 ? (t * l) : (l - (t * l))
+                var p1 = path.getPointAtLength(atLength),
+                    p2 = path.getPointAtLength((atLength) + direction),
+                    angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
+
+                const svgX = p1.x - (window.innerWidth / 2)
+                let svgY = container.scrollHeight - p1.y - (window.innerHeight / 2)
+
+                svgY = svgY < 0 ? 0 : svgY
+
+                container.querySelector('svg').style.transform = "translate(-" + svgX + "px," + svgY + "px)"
+
                 return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
             }
         }

@@ -7,25 +7,32 @@ const router = express.Router()
 
 module.exports = (passport) => {
   router.get('/', (req, res, next) => {
-    stravaController.returnElevationGain(req, res, passport, next)
-      .then((elevation) => {
-        // Save in database
-        const user = new UserModel()
-        user.insert(
-          { stravaId: req.user.id },
-          {
-            stravaId: req.user.id,
-            elevationGain: elevation
-          }
-        )
-        userController.getUser(req, res, passport, next)
-          .then(result => {
-            res.status(200).send(result)
-          })
-          .catch(err => {
-            res.status(400).send({error: err.toString()})
-          })
+    userController.getUser(req, res, passport, next)
+      .then(result => {
+        res.status(200).send(result)
       })
+      .catch(err => {
+        res.status(400).send({error: err.toString()})
+      })
+    // stravaController.returnElevationGain(req, res, passport, next)
+    //   .then((elevation) => {
+    //     Save in database
+    //     const user = new UserModel()
+    //     user.insert(
+    //       { stravaId: req.user.id },
+    //       {
+    //         stravaId: req.user.id,
+    //         elevationGain: elevation
+    //       }
+    //     )
+    //     userController.getUser(req, res, passport, next)
+    //       .then(result => {
+    //         res.status(200).send(result)
+    //       })
+    //       .catch(err => {
+    //         res.status(400).send({error: err.toString()})
+    //       })
+    //   })
   })
 
   router.get(
