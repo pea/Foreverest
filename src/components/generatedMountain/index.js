@@ -94,7 +94,7 @@ export class GeneratedMountain extends Component {
     //   'easeOutExpo'
     // )
 
-    let cameraData = 0
+    let cameraData = value
 
     let cameraPointer = g.append("g")
       .data([cameraData])
