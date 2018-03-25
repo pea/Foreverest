@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+
 import { connect } from 'react-redux'
 import { loadApp } from 'actions/app'
 import styles from 'components/button/styles.scss'
@@ -33,7 +34,7 @@ export class AppContainer extends Component {
             styles.button,
             styles[`type${capitalizeFirstLetter(this.props.type)}`],
             styles[`position${capitalizeFirstLetter(this.props.position)}`],
-          ].join(' ')}
+          ].concat(this.props.classes).join(' ')}
           onClick={this.props.onClick}
         >
           {this.props.text}

@@ -16,8 +16,7 @@ type Props = {
 
 export class GeneratedMountain extends Component {
   constructor(props){
-    super(props)
-    this.init(this.props.percentage)    
+    super(props)   
   }
 
   componentDidMount() {
@@ -35,6 +34,7 @@ export class GeneratedMountain extends Component {
 
   init(percentage) {
     if (typeof percentage === 'undefined') return
+    if (typeof window === 'undefined') return
 
     const container = ReactDOM.findDOMNode(this.refs.container)
 
@@ -84,7 +84,7 @@ export class GeneratedMountain extends Component {
       .attr('ref', 'line')
       .attr('d', theline)
 
-    let value = percentage / 100 * 2 / 100
+    let value = percentage / 100 * 4 / 100
 
     // scrollToWithAnimation(
     //   ReactDOM.findDOMNode(this.refs.container),
@@ -123,7 +123,7 @@ export class GeneratedMountain extends Component {
     function transition() {
       direction *= -1
       pointer.transition()
-        .duration(3000)
+        .duration(5000)
         .ease(easeExpOut)
         .attrTween("transform", function (d) {
             return translateAlong(d, path.node())()
@@ -131,7 +131,8 @@ export class GeneratedMountain extends Component {
 
       cameraPointer
         .transition()
-        .duration(0)
+        .duration(5000)
+        .ease(easeExpOut)
         .attrTween("transform", function (d) {
           return translateCameraAlong(d, path.node())()
         })

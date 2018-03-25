@@ -8,7 +8,7 @@ type Props = {
 
 const Layout = (props: Props) =>
   <div>
-    <div className={styles.wrapper} style={{height: `${window.innerHeight - 60}px`}}>
+    <div className={styles.wrapper} style={{height: `${typeof window === 'undefined' ? window.innerHeight - 60 : ''}px`}}>
     <Nav />
       {props.children}
     </div>

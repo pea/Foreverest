@@ -10,7 +10,7 @@ export function handleCallback (req, res, passport, next) {
   passport.authenticate(
     'strava',
     {
-      successRedirect: config.clientUrl,
+      successRedirect: `${config.clientUrl}/progress`,
       failureRedirect: '/connect'
     }
   )(req, res, next)

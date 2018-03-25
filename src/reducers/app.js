@@ -12,6 +12,8 @@ export default function app(state = initialState, action) {
       return { ...state, pageTitle: action.text }
     case 'UPDATE_SUCCESSFUL':
       return { ...state, user: action.user }
+    case 'GET_SUCCESSFUL':
+      return { ...state, user: action.user }
     default:
       return state
   }

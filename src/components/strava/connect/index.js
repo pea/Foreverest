@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
+
+import Button from 'components/button/index'
+import config from 'config'
 import { connect } from 'react-redux'
 import { loadApp } from 'actions/app'
-import Button from 'components/button/index'
 import request from 'superagent'
-import config from 'config'
 
 type Props = {
   dispatch: () => void,
@@ -19,6 +20,7 @@ export class AppContainer extends Component {
   props: Props
 
   handleClick() {
+    if (typeof window === 'undefined') return
     window.location = `${config.api.endpoint}/auth/strava/authenticate`
   }
 
@@ -28,7 +30,7 @@ export class AppContainer extends Component {
     }
 
     return (
-      <Button type="strava" position="" align="center" text="Connect" onClick={this.handleClick} />
+      <Button type="strava" position="" align="center" text="Connect with Strava" onClick={this.handleClick} classes={[this.props.classes].join(' ')} />
     )
   }
 }

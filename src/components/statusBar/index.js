@@ -29,15 +29,15 @@ export class MountainGraph extends Component {
       <div>
         <div className={styles.stats}>
           <div className={[gridStyles.grid, gridStyles.gut20].join(' ')}>
-            <div className={[gridStyles.col, gridStyles['fill-width']].join(' ')}>
+            <div className={[gridStyles.col, gridStyles.fillWidth].join(' ')}>
               {this.props.feet}<span className={styles.unit}>FT</span>
               <div className={styles.label}>Elevation</div>
             </div>
-            <div className={[gridStyles.col, gridStyles['fill-width']].join(' ')}>
+            <div className={[gridStyles.col, gridStyles.fillWidth].join(' ')}>
               {this.props.remaining}<span className={styles.unit}>FT</span>
               <div className={styles.label}>Remaining</div>
             </div>
-            <div className={[gridStyles.col, gridStyles['fill-width']].join(' ')}>
+            <div className={[gridStyles.col, gridStyles.fillWidth].join(' ')}>
               {this.props.percentage}<span className={styles.unit}>%</span>
               <div className={styles.label}>Completed</div>
             </div>

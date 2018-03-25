@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { loadApp, updatePageTitle } from 'actions/app'
-import styles from 'components/nav/styles.scss'
-import { TimelineMax } from 'gsap'
+
 import { Link } from 'react-router-dom'
+import { TimelineMax } from 'gsap'
+import { connect } from 'react-redux'
+import styles from 'components/nav/styles.scss'
 var FontAwesome = require('react-fontawesome')
 
 type Props = {
@@ -67,7 +68,7 @@ export class AppContainer extends Component {
         </div>
         <div className={styles.menu} onClick={(e) => this.handleMenuClick(e)} ref={(input) => { this.menu = input; }}>
           <ul>
-            <li><div className={styles.icon}><FontAwesome name='map' /></div><Link to="/">My Progress</Link></li>
+            <li><div className={styles.icon}><FontAwesome name='map' /></div><Link to="/progress">My Progress</Link></li>
             <li><div className={styles.icon}><FontAwesome name='plug' /></div><Link to="/connect">Connect with Strava</Link></li>
           </ul>
         </div>

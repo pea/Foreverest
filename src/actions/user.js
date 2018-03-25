@@ -36,4 +36,36 @@ export function updateUser () {
   }
 }
 
+export function getUserSuccess (data) {
+  return {
+    type: 'GET_SUCCESSFUL',
+    user: {
+      feet: Math.round(data.elevationGain),
+      percentage: Math.round(data.elevationGain / 29030 * 100),
+      remaining: Math.round(29030 - +data.elevationGain)
+    }
+  }
+}
+
+export function getUserFail () {
+  return {
+    type: 'GET_FAILED'
+  }
+}
+
+export function getUser () {
+  return function (dispatch) {
+    return request
+      .get(`${config.api.endpoint}/user`)
+      .withCredentials()
+      .then((res) => {
+        const data = JSON.parse(res.text)
+        store.dispatch(getUserSuccess(data))
+      })
+      .catch(() => {
+        store.dispatch(getUserFail())
+      })
+  }
+}
+
 export default { updateUser }
