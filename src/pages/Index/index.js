@@ -43,7 +43,7 @@ export class AppContainer extends Component {
         <div className={[gridStyles.col, gridStyles.fixedWidth, styles.captionCol].join(' ')}>
             <div className={[styles.caption].join(' ')}>
               <h1>Foreverest</h1>
-              <p>Small herbs have grace; great weeds do grow apace. And since, methinks I would not grow so fast, because sweet flowers are slow and weeds make haste.</p>
+              <p>The struggle itself towards the heights is enough to fill a person's heart. One must imagine Sisyphus happy.</p>
               <Link to={_.isEmpty(this.props.user) ? '/connect' : '/progress'} className={styles.button}>Continue</Link>
             </div>
           </div>

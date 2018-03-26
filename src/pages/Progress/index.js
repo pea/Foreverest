@@ -26,7 +26,7 @@ export class AppContainer extends Component {
   
   componentDidMount() {
     this.props.dispatch(loadApp())
-    this.props.dispatch(updatePageTitle('Foreverest'))
+    this.props.dispatch(updatePageTitle(''))
     this.props.dispatch(updateUser())
   }
 

@@ -1,12 +1,12 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 import { loadApp, updatePageTitle } from 'actions/app'
-import StravaConnect from 'components/strava/connect/index'
-import Button from 'components/button'
-import config from '../../config'
 
-import styles from 'pages/Connect/styles.scss'
+import Button from 'components/button'
+import StravaConnect from 'components/strava/connect/index'
+import config from '../../config'
+import { connect } from 'react-redux'
 import gridStyles from 'css/adaptivegrid.scss'
+import styles from 'pages/Connect/styles.scss'
 
 type Props = {
   dispatch: () => void,
@@ -27,12 +27,10 @@ export class AppContainer extends Component {
     }
 
     return (
-      <div className={[gridStyles.grid, gridStyles.gut20, gridStyles.outergut].join(' ')}>
-        <div className={[gridStyles.col, gridStyles.perc100].join(' ')}>
-          Please connect with Strava to start using Foreverest.
-        </div>
-        <div className={[gridStyles.col, gridStyles.perc100].join(' ')}>
-          <StravaConnect />
+      <div className={[styles.grid, gridStyles.grid, gridStyles.gut40, gridStyles.outergut, gridStyles.positionMiddle, gridStyles.positionCenter].join(' ')}>
+        <div className={[styles.containerCol].join(' ')}>
+          Please connect to Strava to give Foreverest permission to sync your elevation data.
+          <StravaConnect classes={styles.button} />
         </div>
       </div>
     )
