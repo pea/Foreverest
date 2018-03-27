@@ -27,7 +27,13 @@ export class AppContainer extends Component {
     }
 
     return (
-      <div className={[styles.grid, gridStyles.grid, gridStyles.gut40, gridStyles.outergut, gridStyles.positionMiddle, gridStyles.positionCenter].join(' ')}>
+      <div className=
+        {
+          [
+            styles.grid, gridStyles.grid, gridStyles.gut40,
+            gridStyles.outergut, gridStyles.positionMiddle, gridStyles.positionCenter
+          ].join(' ')
+        }>
         <div className={[styles.containerCol].join(' ')}>
           Please connect to Strava to give Foreverest permission to sync your elevation data.
           <StravaConnect classes={styles.button} />

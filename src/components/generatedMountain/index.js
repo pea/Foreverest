@@ -84,15 +84,36 @@ export class GeneratedMountain extends Component {
       .attr('ref', 'line')
       .attr('d', theline)
 
-    let value = percentage / 100 * 4 / 100
+    const checkpoints = [
+      { percentage: 50, 'name': '50% Everest'},
+      { percentage: 100, 'name': 'Everest'}
+    ]
 
-    // scrollToWithAnimation(
-    //   ReactDOM.findDOMNode(this.refs.container),
-    //   'scrollLeft',
-    //   50000 / 4500 * percentage - (window.screen.width / 2),
-    //   1000,
-    //   'easeOutExpo'
-    // )
+    checkpoints.forEach(item => {
+      let position = item.percentage / 100 * 4 / 100
+      const checkpointPointer = g.append("g")
+        .data([position])
+      
+      const checkpoint = checkpointPointer
+        .append("path")
+        .attr("class", styles.checkpoint)
+        .attr('d', symbol().type(symbolTriangle).size(100)())
+      
+      const label = checkpointPointer.append("text")
+          .attr('transform', "translate(0, -10)")
+          .attr('text-anchor', "middle")
+          .text(item.name)
+
+      checkpointPointer
+        .transition()
+        .duration(0)
+        .ease(easeExpOut)
+        .attrTween("transform", function (d) {
+          return translateCameraAlong(d, path.node())()
+        })
+    })
+
+    let value = percentage / 100 * 4 / 100
 
     let cameraData = value
 

@@ -14,6 +14,11 @@
         transition: transform 1s;
         transition-timing-function: cubic-bezier(.075, .820, .165, 1.000);
     }
+    text {
+        transform: translate(0, 23px) scale(.7);
+
+        fill: #fff5d9;
+    }
 }
 
 .chart {
@@ -24,11 +29,17 @@
 .tri {
     transform: rotate(180deg) translate(0, 8px);
 
-    fill: #ef6c8c;
+    fill: #b7516a;
 }
 
 .camera {
     transform: rotate(180deg) translate(0, 8px);
 
     fill: transparent;
+}
+
+.checkpoint {
+    transform: rotate(0deg) translate(0, 6px) scale(.8);
+
+    fill: #fff5d9;;
 }
