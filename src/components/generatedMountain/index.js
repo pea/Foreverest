@@ -16,7 +16,14 @@ type Props = {
 
 export class GeneratedMountain extends Component {
   constructor(props){
-    super(props)   
+    super(props)
+    this.state = {
+      pointer: {},
+      cameraPointer: {},
+      path: {},
+      direction: -1,
+      atLength: 0
+    }
   }
 
   componentDidMount() {
@@ -28,7 +35,62 @@ export class GeneratedMountain extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.percentage !== this.props.percentage) {
-      this.init(nextProps.percentage)
+      this.update(nextProps.percentage)
+    }
+  }
+
+  update(percentage) {
+    const value = percentage / 100 * 4 / 100
+    this.state.pointer
+      .data([value])
+      .transition()
+      .duration(5000)
+      .ease(easeExpOut)
+      .attrTween("transform", (d) => {
+          return this.translateAlong(d, this.state.path.node())()
+      })
+    this.state.cameraPointer
+      .data([value])
+      .transition()
+      .duration(5000)
+      .ease(easeExpOut)
+      .attrTween("transform", (d) => {
+          return this.translateCameraAlong(d, this.state.path.node())()
+      })
+  }
+
+  translateAlong(d, path) {
+    const l = path.getTotalLength() * d
+    return (d, i, a) => {
+        return (t) => {
+            this.state.atLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
+            var p1 = path.getPointAtLength(this.state.atLength),
+                p2 = path.getPointAtLength((this.state.atLength) + this.state.direction),
+                angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
+            return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
+        }
+    }
+  }
+
+  translateCameraAlong(d, path) {
+    const l = path.getTotalLength() * d
+    const container = ReactDOM.findDOMNode(this.refs.container)
+    return (d, i, a) => {
+        return (t) => {
+            this.state.atLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
+            var p1 = path.getPointAtLength(this.state.atLength),
+                p2 = path.getPointAtLength((this.state.atLength) + this.state.direction),
+                angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
+
+            const svgX = p1.x - (window.innerWidth / 2)
+            let svgY = container.scrollHeight - p1.y - (window.innerHeight / 2)
+
+            svgY = svgY < 0 ? 0 : svgY
+
+            container.querySelector('svg').style.transform = "translate(-" + svgX + "px," + svgY + "px)"
+
+            return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
+        }
     }
   }
 
@@ -78,7 +140,7 @@ export class GeneratedMountain extends Component {
     const g = svg.append("g")
     .attr('transform', "translate(0,0)")
 
-    const path = g.append("path")
+    this.state.path = g.append("path")
       .datum(data)
       .attr('class', styles.line)
       .attr('ref', 'line')
@@ -108,8 +170,8 @@ export class GeneratedMountain extends Component {
         .transition()
         .duration(0)
         .ease(easeExpOut)
-        .attrTween("transform", function (d) {
-          return translateCameraAlong(d, path.node())()
+        .attrTween("transform", (d) => {
+          return this.translateAlong(d, this.state.path.node())()
         })
     })
 
@@ -117,70 +179,62 @@ export class GeneratedMountain extends Component {
 
     let cameraData = value
 
-    let cameraPointer = g.append("g")
+    this.state.cameraPointer = g.append("g")
       .data([cameraData])
 
-    let pointer = g.append("g")
+    this.state.pointer = g.append("g")
       .data([value])
 
-    // Disable for now
-    // const label = pointer.append("text")
-    //   .attr('transform', "translate(0, -10)")
-    //   .text("Text")
-
-    const tri = pointer
+    const tri = this.state.pointer
       .append("path")
       .attr("class", styles.tri)
       .attr('d', symbol().type(symbolTriangle).size(100)())
 
-    const camera = cameraPointer
+    const camera = this.state.cameraPointer
       .append("path")
       .attr("class", styles.camera)
       .attr('d', symbol().type(symbolTriangle).size(100)())
 
-    let direction = -1,
-        atLength
-
-    function transition() {
-      direction *= -1
-      pointer.transition()
+    const transition = () => {
+      this.state.direction *= -1
+      this.state.pointer.transition()
         .duration(5000)
         .ease(easeExpOut)
-        .attrTween("transform", function (d) {
-            return translateAlong(d, path.node())()
+        .attrTween("transform", (d) => {
+            return this.translateAlong(d, this.state.path.node())()
         })
 
-      cameraPointer
+        this.state.cameraPointer
         .transition()
         .duration(5000)
         .ease(easeExpOut)
-        .attrTween("transform", function (d) {
-          return translateCameraAlong(d, path.node())()
+        .attrTween("transform", (d) => {
+          return this.translateCameraAlong(d, this.state.path.node())()
         })
       
-      document.addEventListener("wheel", function (e) {
-        cameraPointer = cameraPointer.data([cameraData += (e.deltaX / 100000)])
+      document.addEventListener("wheel", (e) => {
+        this.state.cameraPointer = this.state.cameraPointer.data([cameraData += (e.deltaX / 100000)])
         cameraData = cameraData < 0 ? 0 : cameraData
-        cameraPointer
+        this.state.cameraPointer
           .transition()
           .duration(0)
-          .attrTween("transform", function (d) {
-            return translateCameraAlong(d, path.node())()
+          .attrTween("transform", (d) => {
+            return this.translateCameraAlong(d, this.state.path.node())()
           })
       })
 
       new Hammer(container).on('panleft panright', function(e) {
         if (e.type === 'panleft') {
-          cameraPointer = cameraPointer.data([cameraData += (e.distance/ 100000)])
+          this.state.cameraPointer = this.state.cameraPointer.data([cameraData += (e.distance/ 100000)])
         } else {
-          cameraPointer = cameraPointer.data([cameraData -= (e.distance / 100000)])
+          this.state.cameraPointer = this.state.cameraPointer.data([cameraData -= (e.distance / 100000)])
         }
         cameraData = cameraData < 0 ? 0 : cameraData
-        cameraPointer
+        this.state.cameraPointer
           .transition()
           .duration(0)
-          .attrTween('transform', function (d) {
-            return translateCameraAlong(d, path.node())()
+          .attrTween('transform', (d) => {
+            return this.translateCameraAlong(d, this.state.path.node())()
           }) 
       });
       
@@ -189,40 +243,6 @@ export class GeneratedMountain extends Component {
     transition()
 
     ReactDOM.findDOMNode(this.refs.container).scrollTop = '99999'
-
-    function translateAlong(d, path) {
-        var l = path.getTotalLength() * d
-        return function (d, i, a) {
-            return function (t) {
-                atLength = direction === 1 ? (t * l) : (l - (t * l))
-                var p1 = path.getPointAtLength(atLength),
-                    p2 = path.getPointAtLength((atLength) + direction),
-                    angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
-                return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
-            }
-        }
-    }
-
-    function translateCameraAlong(d, path) {
-        var l = path.getTotalLength() * d
-        return function (d, i, a) {
-            return function (t) {
-                atLength = direction === 1 ? (t * l) : (l - (t * l))
-                var p1 = path.getPointAtLength(atLength),
-                    p2 = path.getPointAtLength((atLength) + direction),
-                    angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
-
-                const svgX = p1.x - (window.innerWidth / 2)
-                let svgY = container.scrollHeight - p1.y - (window.innerHeight / 2)
-
-                svgY = svgY < 0 ? 0 : svgY
-
-                container.querySelector('svg').style.transform = "translate(-" + svgX + "px," + svgY + "px)"
-
-                return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
-            }
-        }
-    }
   }
 
   render() {

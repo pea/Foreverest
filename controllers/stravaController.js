@@ -48,12 +48,12 @@ export function returnElevationGain (req, res, passport, next, page = 1, totalEl
             resolve(result)
           })
           .catch((err) => {
-            console.log(err)
+            reject(err)
           })
         }
       })
       .catch((err) => {
-        console.log(err)
+        reject(err)
       })
   })
 }

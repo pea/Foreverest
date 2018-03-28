@@ -41,7 +41,9 @@ passport.use(
         user.insert(
           { stravaId: profile.id },
           {
-            stravaId: profile.id
+            stravaId: profile.id,
+            elevationGain: 0,
+            updateTime: 946684800
           }
         )
         return done(null, profile)

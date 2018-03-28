@@ -23,7 +23,7 @@ export function updateUserFail () {
 export function updateUser () {
   return function (dispatch) {
     return request
-      .get(`${config.api.endpoint}/user`)
+      .get(`${config.api.endpoint}/user/updateElevation`)
       .withCredentials()
       .then((res) => {
         const data = JSON.parse(res.text)
