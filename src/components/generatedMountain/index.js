@@ -18,6 +18,7 @@ export class GeneratedMountain extends Component {
   constructor(props){
     super(props)
     this.state = {
+      initiated: false,
       pointer: {},
       cameraPointer: {},
       path: {},
@@ -35,7 +36,12 @@ export class GeneratedMountain extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.percentage !== this.props.percentage) {
-      this.update(nextProps.percentage)
+      if (this.state.initiated === true) {
+        this.update(nextProps.percentage)
+      } else {
+        this.init(nextProps.percentage)
+        this.update(nextProps.percentage)
+      }
     }
   }
 
