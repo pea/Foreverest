@@ -1,7 +1,11 @@
 const initialState = {
   loaded: false,
   pageTitle: '',
-  user: {}
+  user: {
+    feet: 0,
+    percentage: 0,
+    remaining: 0
+  }
 }
 
 export default function app(state = initialState, action) {

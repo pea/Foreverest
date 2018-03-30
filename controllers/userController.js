@@ -11,68 +11,63 @@ export function getUser (req, res, passport, next) {
   })
 }
 
-export function updateUserElevation (req, res, passport, next) {
-  return new Promise((resolve, reject) => {
-    getUser(req, res, passport, next)
-      .then(user => {
-        const updateTime = Date.now() / 1000
-        if ((updateTime - user.updateTime) > 60) {
-          return stravaController.returnElevationGain(req, res, passport, next)
-            .then(elevationGain => {
-              return {elevationGain, updateTime}
-            })
-            .catch(err => { reject(err) })
-        } else {
-          return {elevationGain: user.elevationGain, updateTime: user.updateTime}
+export async function updateUserElevation (req, res, passport, next) {
+  let updateTime = Date.now() / 1000
+  let elevationGain
+  let user
+
+  try {
+    user = await getUser(req, res, passport, next)
+  } catch (err) {
+    throw new Error(err)
+  }
+
+  if (typeof user.elevationGain === 'undefined') {
+    try {
+      new UserModel().insert(
+        { stravaId: req.user.id },
+        {
+          stravaId: req.user.id,
+          elevationGain: 0,
+          updateTime: 946684800
         }
-      })
-      .then(({elevationGain, updateTime}) => {
-        new UserModel().insert(
-          { stravaId: req.user.id },
-          {
-            stravaId: req.user.id,
-            elevationGain: elevationGain,
-            updateTime
-          }
-        )
-        resolve({
+      )
+      user.elevationGain = 0
+      user.updateTime = 946684800
+    } catch (err) {
+      throw new Error(err)
+    }
+  }
+
+  if ((updateTime - user.updateTime) > 60) {
+    try {
+      elevationGain = await stravaController.returnElevationGain(req, res, passport, next)
+    } catch (err) {
+      throw new Error(err)
+    }
+
+    try {
+      new UserModel().insert(
+        { stravaId: req.user.id },
+        {
           stravaId: req.user.id,
           elevationGain: elevationGain,
-          timeSinceUpdate: (Date.now() / 1000) - updateTime
-        })
-      })
-      .catch(err => { reject(err) })
-    })
+          updateTime
+        }
+      )
+    } catch (err) {
+      throw new Error(err)
+    }
+  } else {
+    elevationGain = user.elevationGain
+    updateTime = user.updateTime
+  }
 
-  //   stravaController.returnElevationGain(req, res, passport, next)
-  //   .then(result => {
-  //     getUser(req, res, passport, next)
-  //       .then(({elevationGain, updateTime}, err) => {
-  //         if ((Date.now() / 1000 - updateTime) > 300) {
-  //           const user = new UserModel()
-  //           updateTime = Date.now() / 1000
-  //           user.insert(
-  //             { stravaId: req.user.id },
-  //             {
-  //               stravaId: req.user.id,
-  //               elevationGain: result,
-  //               updateTime
-  //             }
-  //           )
-  //         }
-  //         resolve({
-  //           elevationGain,
-  //           timeSinceUpdate: ((Date.now() / 1000) - updateTime)
-  //         })
-  //       })
-  //       .catch(err => {
-  //         reject(err)
-  //       })
-  //   })
-  //   .catch(err => {
-  //     reject(err)
-  //   })
-  // })
+  return {
+    stravaId: req.user.id,
+    elevationGain,
+    timeSinceUpdate: (Date.now() / 1000) - updateTime
+  }
 }
 
 export default {

@@ -11,10 +11,10 @@ import styles from 'components/generatedMountain/style.scss'
 type Props = {
   dispatch: () => void,
   loaded: boolean,
-  percentage: string
+  percentage: int
 }
 
-export class GeneratedMountain extends Component {
+export class GeneratedMountain extends Component {  
   constructor(props){
     super(props)
     this.state = {
@@ -23,7 +23,8 @@ export class GeneratedMountain extends Component {
       cameraPointer: {},
       path: {},
       direction: -1,
-      atLength: 0
+      atLength: 0,
+      container: {}
     }
   }
 
@@ -46,6 +47,7 @@ export class GeneratedMountain extends Component {
   }
 
   update(percentage) {
+    if (!percentage && percentage != 0) return
     const value = percentage / 100 * 4 / 100
     this.state.pointer
       .data([value])
@@ -80,7 +82,6 @@ export class GeneratedMountain extends Component {
 
   translateCameraAlong(d, path) {
     const l = path.getTotalLength() * d
-    const container = ReactDOM.findDOMNode(this.refs.container)
     return (d, i, a) => {
         return (t) => {
             this.state.atLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
@@ -89,11 +90,11 @@ export class GeneratedMountain extends Component {
                 angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
 
             const svgX = p1.x - (window.innerWidth / 2)
-            let svgY = container.scrollHeight - p1.y - (window.innerHeight / 2)
+            let svgY = this.state.container.scrollHeight - p1.y - (window.innerHeight / 2)
 
             svgY = svgY < 0 ? 0 : svgY
 
-            container.querySelector('svg').style.transform = "translate(-" + svgX + "px," + svgY + "px)"
+            this.state.container.querySelector('svg').style.transform = "translate(-" + svgX + "px," + svgY + "px)"
 
             return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
         }
@@ -101,10 +102,10 @@ export class GeneratedMountain extends Component {
   }
 
   init(percentage) {
-    if (typeof percentage === 'undefined') return
+    if (!percentage && percentage != 0) return
     if (typeof window === 'undefined') return
 
-    const container = ReactDOM.findDOMNode(this.refs.container)
+    this.state.container = ReactDOM.findDOMNode(this.refs.container)
 
     var 
       width = 100000,
@@ -183,6 +184,8 @@ export class GeneratedMountain extends Component {
 
     let value = percentage / 100 * 4 / 100
 
+    value = value > .8 ? .8 : value
+
     let cameraData = value
 
     this.state.cameraPointer = g.append("g")
@@ -219,7 +222,9 @@ export class GeneratedMountain extends Component {
         })
       
       document.addEventListener("wheel", (e) => {
-        this.state.cameraPointer = this.state.cameraPointer.data([cameraData += (e.deltaX / 100000)])
+        const data = cameraData += (e.deltaX / 100000)
+        if (data > .8) return
+        this.state.cameraPointer = this.state.cameraPointer.data([data])
         cameraData = cameraData < 0 ? 0 : cameraData
         this.state.cameraPointer
           .transition()
@@ -229,9 +234,11 @@ export class GeneratedMountain extends Component {
           })
       })
 
-      new Hammer(container).on('panleft panright', function(e) {
+      new Hammer(this.state.container).on('panleft panright', function(e) {
+        const data = cameraData += (e.distance/ 100000)
+        if (data > .8) return
         if (e.type === 'panleft') {
-          this.state.cameraPointer = this.state.cameraPointer.data([cameraData += (e.distance/ 100000)])
+          this.state.cameraPointer = this.state.cameraPointer.data([data])
         } else {
           this.state.cameraPointer = this.state.cameraPointer.data([cameraData -= (e.distance / 100000)])
         }
@@ -248,7 +255,8 @@ export class GeneratedMountain extends Component {
   
     transition()
 
-    ReactDOM.findDOMNode(this.refs.container).scrollTop = '99999'
+    ReactDOM.findDOMNode(this.state.container).scrollTop = '99999'
+    this.state.initiated = true
   }
 
   render() {
@@ -268,7 +276,8 @@ export class GeneratedMountain extends Component {
 
 function mapStateToProperties(state) {
   return {
-    loaded: state.app.loaded
+    loaded: state.app.loaded,
+    percentage: state.app.user.percentage
   }
 }
 

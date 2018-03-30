@@ -1,3 +1,4 @@
+require('babel-polyfill')
 const path = require('path')
 const express = require('express')
 const cors = require('cors')
@@ -11,7 +12,6 @@ const session = require('express-session')
 const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const config = require('./config').default
-
 require('dotenv').config()
 
 process.env.STRAVA_ACCESS_TOKEN = config.strava.accessToken
@@ -41,9 +41,7 @@ passport.use(
         user.insert(
           { stravaId: profile.id },
           {
-            stravaId: profile.id,
-            elevationGain: 0,
-            updateTime: 946684800
+            stravaId: profile.id
           }
         )
         return done(null, profile)
