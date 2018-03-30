@@ -47,7 +47,7 @@ export class AppContainer extends Component {
                 The struggle itself towards the heights is enough to fill a person's heart. One must imagine Sisyphus happy.
               </p>
               <p>
-                Connect to Strava and see how far you can cycle up the infinitely tall mountain that is Mount Foreverest.
+                Connect to Strava and see how far you can cycle up the infinitely tall Mount Foreverest.
               </p>
               <Link to={_.isEmpty(this.props.user) ? '/connect' : '/progress'} className={styles.button}>Continue</Link>
             </div>

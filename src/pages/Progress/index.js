@@ -33,12 +33,6 @@ export class AppContainer extends Component {
     this.users = {}
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (_.size(this.props.users) !== _.size(nextProps.users)) {
-      this.users = nextProps.users.filter(item => item.stravaId !== this.props.user.stravaId)
-    }
-  }
-
   props: Props
 
   render() {
@@ -48,7 +42,7 @@ export class AppContainer extends Component {
 
     return (
       <div>
-        <GeneratedMountain percentage={this.props.user.percentage} users={this.users} />
+        <GeneratedMountain percentage={this.props.user.percentage} users={this.props.users} user={this.props.user} />
         <StatusBar feet={this.props.user.feet} remaining={this.props.user.remaining} percentage={this.props.user.percentage} />
       </div>
     )

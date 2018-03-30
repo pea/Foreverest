@@ -74,6 +74,8 @@ export class GeneratedMountain extends Component {
   }
 
   plotUsers(users) {
+    users = users.filter(item => parseInt(item.stravaId) !== parseInt(this.props.user.stravaId))
+    
     users.forEach(item => {
       const percentage = Math.round(item.elevationGain / 29030 * 100)
       let position = percentage / 100 * 4 / 100
