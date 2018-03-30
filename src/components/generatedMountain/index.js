@@ -235,10 +235,11 @@ export class GeneratedMountain extends Component {
       })
 
       new Hammer(this.state.container).on('panleft panright', (e) => {
-        if (data > .8) return
         let distance = e.distance > 50 ? 50 : e.distance
         if (e.type === 'panleft') {
-          this.state.cameraPointer = this.state.cameraPointer.data([cameraData += (distance / 100000)])
+          let pranLeftData = cameraData += (distance / 100000)
+          if (pranLeftData > .8) return
+          this.state.cameraPointer = this.state.cameraPointer.data([pranLeftData])
         } else {
           this.state.cameraPointer = this.state.cameraPointer.data([cameraData -= (distance / 100000)])
         }
