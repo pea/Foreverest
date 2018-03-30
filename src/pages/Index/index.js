@@ -43,7 +43,12 @@ export class AppContainer extends Component {
         <div className={[gridStyles.col, gridStyles.fixedWidth, styles.captionCol].join(' ')}>
             <div className={[styles.caption].join(' ')}>
               <h1>Foreverest</h1>
-              <p>The struggle itself towards the heights is enough to fill a person's heart. One must imagine Sisyphus happy.</p>
+              <p>
+                The struggle itself towards the heights is enough to fill a person's heart. One must imagine Sisyphus happy.
+              </p>
+              <p>
+                Connect to Strava and see how far you can cycle up the infinitely tall mountain that is Mount Foreverest.
+              </p>
               <Link to={_.isEmpty(this.props.user) ? '/connect' : '/progress'} className={styles.button}>Continue</Link>
             </div>
           </div>
