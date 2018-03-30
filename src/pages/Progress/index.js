@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
+import { getUsers, updateUser } from 'actions/user'
 import { loadApp, updatePageTitle } from 'actions/app'
 
 import Button from 'components/button'
 import GeneratedMountain from 'components/generatedMountain'
 import StatusBar from 'components/statusBar'
+import _ from 'underscore'
 import config from 'config'
 import { connect } from 'react-redux'
 import gridStyles from 'css/adaptivegrid.scss'
@@ -11,7 +13,6 @@ import { push } from 'connected-react-router'
 import request from 'superagent'
 import store from '../../store'
 import styles from 'pages/Progress/styles.scss'
-import { updateUser } from 'actions/user'
 
 type Props = {
   dispatch: () => void,
@@ -28,6 +29,14 @@ export class AppContainer extends Component {
     this.props.dispatch(loadApp())
     this.props.dispatch(updatePageTitle(''))
     this.props.dispatch(updateUser())
+    this.props.dispatch(getUsers())
+    this.users = {}
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (_.size(this.props.users) !== _.size(nextProps.users)) {
+      this.users = nextProps.users.filter(item => item.stravaId !== this.props.user.stravaId)
+    }
   }
 
   props: Props
@@ -39,7 +48,7 @@ export class AppContainer extends Component {
 
     return (
       <div>
-        <GeneratedMountain percentage={this.props.user.percentage} />
+        <GeneratedMountain percentage={this.props.user.percentage} users={this.users} />
         <StatusBar feet={this.props.user.feet} remaining={this.props.user.remaining} percentage={this.props.user.percentage} />
       </div>
     )
@@ -49,7 +58,8 @@ export class AppContainer extends Component {
 function mapStateToProperties(state) {
   return {
     loaded: state.app.loaded,
-    user: state.app.user
+    user: state.app.user,
+    users: state.app.users
   }
 }
 

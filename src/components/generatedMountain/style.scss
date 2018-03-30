@@ -14,7 +14,7 @@
         transition: transform 1s;
         transition-timing-function: cubic-bezier(.075, .820, .165, 1.000);
     }
-    text {
+    .checkpointLabel {
         transform: translate(0, 23px) scale(.7);
 
         fill: #fff5d9;
@@ -42,4 +42,40 @@
     transform: rotate(0deg) translate(0, 6px) scale(.8);
 
     fill: #fff5d9;;
+}
+
+.userTri {
+    transform: rotate(180deg) translate(0, 6px);
+
+    fill: #b7516a;
+}
+
+.photoLink {
+    .photo {
+        width: 25px;
+        transition: transform .5s;
+        transform: translate(-12.5px, -43px);
+    }
+    .displayName {
+        transition: opacity .3s;
+        opacity: 0;
+
+        fill: #b7516a;
+    }
+    &:hover {
+        width: 30px;
+        cursor: pointer;
+        .displayName[data-lines='1'] + .photo {
+            transform: translate(-12.5px, -55px);
+        }
+        .displayName[data-lines='2'] + .photo {
+            transform: translate(-12.5px, -68px);
+        }
+        .displayName[data-lines='3'] + .photo {
+            transform: translate(-12.5px, -83px);
+        }
+        .displayName {
+            opacity: 1;
+        }
+    }
 }

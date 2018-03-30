@@ -14,6 +14,16 @@ module.exports = (passport) => {
       })
   })
 
+  router.get('/all', (req, res, next) => {
+    userController.getUsers(req, res, passport, next)
+      .then(result => {
+        res.status(200).send(result)
+      })
+      .catch(err => {
+        res.status(400).send({error: err.toString()})
+      })
+  })
+
   router.get(
     '/updateElevation',
     (req, res, next) => {

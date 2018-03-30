@@ -34,4 +34,16 @@ module.exports = class {
       })
     })
   }
+  getAll () {
+    return new Promise((resolve, reject) => {
+      MongoClient.connect(config.MongoDbConnectionString, (err, db) => {
+        db.collection('users').find({})
+          .toArray((err, results) => {
+            db.close()
+            if (err) reject(new Error('Users not found'))
+            resolve(results)
+          })
+      })
+    })
+  }
 }

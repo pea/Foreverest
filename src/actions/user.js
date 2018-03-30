@@ -7,6 +7,7 @@ export function updateUserSuccess (data) {
   return {
     type: 'UPDATE_SUCCESSFUL',
     user: {
+      stravaId: data.stravaId,
       feet: Math.round(data.elevationGain),
       percentage: Math.round(data.elevationGain / 29030 * 100),
       remaining: Math.round(29030 - +data.elevationGain)
@@ -40,6 +41,7 @@ export function getUserSuccess (data) {
   return {
     type: 'GET_SUCCESSFUL',
     user: {
+      stravaId: data.stravaId,
       feet: Math.round(data.elevationGain),
       percentage: Math.round(data.elevationGain / 29030 * 100),
       remaining: Math.round(29030 - +data.elevationGain)
@@ -64,6 +66,34 @@ export function getUser () {
       })
       .catch(() => {
         store.dispatch(getUserFail())
+      })
+  }
+}
+
+export function getUsersSuccess (data) {
+  return {
+    type: 'GET_USERS_SUCCESSFUL',
+    users: data
+  }
+}
+
+export function getUsersFail () {
+  return {
+    type: 'GET_USERS_FAILED'
+  }
+}
+
+export function getUsers () {
+  return function (dispatch) {
+    return request
+      .get(`${config.api.endpoint}/user/all`)
+      .withCredentials()
+      .then((res) => {
+        const data = JSON.parse(res.text)
+        store.dispatch(getUsersSuccess(data))
+      })
+      .catch(() => {
+        store.dispatch(getUsersFail())
       })
   }
 }

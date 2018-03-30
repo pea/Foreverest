@@ -3,6 +3,7 @@ import { curveBasis, d3, easeExpOut, easeLinear, line, range, scaleLinear, selec
 
 import Hammer from 'hammerjs'
 import ReactDOM from 'react-dom'
+import _ from 'underscore'
 import { connect } from 'react-redux'
 import { loadApp } from 'actions/app'
 import scrollToWithAnimation from 'scrollto-with-animation'
@@ -11,7 +12,8 @@ import styles from 'components/generatedMountain/style.scss'
 type Props = {
   dispatch: () => void,
   loaded: boolean,
-  percentage: int
+  percentage: int,
+  users: object
 }
 
 export class GeneratedMountain extends Component {  
@@ -24,7 +26,8 @@ export class GeneratedMountain extends Component {
       path: {},
       direction: -1,
       atLength: 0,
-      container: {}
+      container: {},
+      svg: {}
     }
   }
 
@@ -43,6 +46,9 @@ export class GeneratedMountain extends Component {
         this.init(nextProps.percentage)
         this.update(nextProps.percentage)
       }
+    }
+    if (_.size(nextProps.users) !== _.size(this.props.users)) {
+      this.plotUsers(nextProps.users)
     }
   }
 
@@ -65,6 +71,52 @@ export class GeneratedMountain extends Component {
       .attrTween("transform", (d) => {
           return this.translateCameraAlong(d, this.state.path.node())()
       })
+  }
+
+  plotUsers(users) {
+    users.forEach(item => {
+      const percentage = Math.round(item.elevationGain / 29030 * 100)
+      let position = percentage / 100 * 4 / 100
+
+      const g = this.state.svg.append("g")
+        .attr('transform', "translate(0,0)")
+
+      const userPointer = g.append("g")
+        .data([position])
+      
+      const user = userPointer
+        .append("path")
+        .attr("class", styles.userTri)
+        .attr('d', symbol().type(symbolTriangle).size(50)())
+
+      const link = userPointer.append("svg:a")
+        .attr("class", styles.photoLink)
+        .attr("target", '_blank')
+        .attr("xlink:href", `https://www.strava.com/athletes/${item.stravaId}`)
+
+      const name = item.displayName.split(' ').reverse()
+
+      name.forEach((nameItem, index) => {
+        link.append("text")
+          .attr('class', styles.displayName)
+          .attr('data-lines', _.size(name))
+          .attr('transform', `translate(0, -${16 + (index * 15)}) scale(.7)`)
+          .attr('text-anchor', "middle")
+          .text(nameItem)
+      })
+
+      const photo = link.append("svg:image")
+        .attr("xlink:href", item.photo)
+        .attr("class", styles.photo)
+
+      userPointer
+        .transition()
+        .duration(0)
+        .ease(easeExpOut)
+        .attrTween("transform", (d) => {
+          return this.translateAlong(d, this.state.path.node())()
+        })
+    })
   }
 
   translateAlong(d, path) {
@@ -138,13 +190,13 @@ export class GeneratedMountain extends Component {
       })
       .y(y)
 
-    const svg = select(ReactDOM.findDOMNode(this.refs.chart))
+    this.state.svg = select(ReactDOM.findDOMNode(this.refs.chart))
       .append("svg")
       .attr('width', width)
       .attr('height', height)
 
 
-    const g = svg.append("g")
+    const g = this.state.svg.append("g")
     .attr('transform', "translate(0,0)")
 
     this.state.path = g.append("path")
@@ -170,6 +222,7 @@ export class GeneratedMountain extends Component {
       
       const label = checkpointPointer.append("text")
           .attr('transform', "translate(0, -10)")
+          .attr('class', styles.checkpointLabel)
           .attr('text-anchor', "middle")
           .text(item.name)
 

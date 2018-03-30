@@ -24,7 +24,9 @@ export function getElevationData (req, res, passport, next, page = 1, totalEleva
       if (err) reject(err)
       let elevationGain = 0
       payload.forEach((item) => {
-        elevationGain = elevationGain + item.total_elevation_gain
+        if (item.type === 'Ride') {
+          elevationGain = elevationGain + item.total_elevation_gain
+        }
       })
       resolve(elevationGain)
     })

@@ -41,7 +41,9 @@ passport.use(
         user.insert(
           { stravaId: profile.id },
           {
-            stravaId: profile.id
+            stravaId: profile.id,
+            displayName: profile.displayName,
+            photo: profile._json.profile_medium
           }
         )
         return done(null, profile)

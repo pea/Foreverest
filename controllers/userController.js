@@ -11,6 +11,18 @@ export function getUser (req, res, passport, next) {
   })
 }
 
+export function getUsers (req, res, passport, next) {
+  return new Promise((resolve, reject) => {
+    const users = new UserModel().getAll()
+      .then((users) => {
+        resolve(users)
+      })
+      .catch(err => {
+        reject(new Error(err))
+      })
+  })
+}
+
 export async function updateUserElevation (req, res, passport, next) {
   let updateTime = Date.now() / 1000
   let elevationGain
