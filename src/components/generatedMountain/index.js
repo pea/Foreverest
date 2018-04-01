@@ -21,22 +21,26 @@ export class GeneratedMountain extends Component {
     super(props)
     this.state = {
       initiated: false,
+      usersPlotted: false,
       pointer: {},
       cameraPointer: {},
       path: {},
       direction: -1,
       atLength: 0,
+      cameraAtLength: 0,
       container: {},
-      svg: {}
+      svg: {},
+      cameraData: 0
     }
   }
+
+  props: Props
 
   componentDidMount() {
     this.props.dispatch(loadApp())
     this.init(this.props.percentage)    
+    this.plotUsers(this.props.users, this.props.user)
   }
-
-  props: Props
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.percentage !== this.props.percentage) {
@@ -44,17 +48,20 @@ export class GeneratedMountain extends Component {
         this.update(nextProps.percentage)
       } else {
         this.init(nextProps.percentage)
-        this.update(nextProps.percentage)
       }
     }
     if (_.size(nextProps.users) !== _.size(this.props.users)) {
-      this.plotUsers(nextProps.users)
+      this.plotUsers(nextProps.users, this.props.user)
+    }
+    if (nextProps.user.stravaId !== this.props.user.stravaId) {
+      this.plotUsers(nextProps.users, nextProps.user)
     }
   }
 
   update(percentage) {
-    if (!percentage && percentage != 0) return
+    if (percentage == 0) return
     const value = percentage / 100 * 4 / 100
+    this.state.cameraData = value
     this.state.pointer
       .data([value])
       .transition()
@@ -73,8 +80,14 @@ export class GeneratedMountain extends Component {
       })
   }
 
-  plotUsers(users) {
-    users = users.filter(item => parseInt(item.stravaId) !== parseInt(this.props.user.stravaId))
+  plotUsers(users, user) {
+    if (this.state.usersPlotted) return
+    if (user.stravaId <= 0) return
+    if (_.size(users) == 0) return
+
+    users = users.filter(item => {
+      return parseInt(item.stravaId) !== parseInt(user.stravaId)
+    })
     
     users.forEach(item => {
       const percentage = Math.round(item.elevationGain / 29030 * 100)
@@ -119,6 +132,8 @@ export class GeneratedMountain extends Component {
           return this.translateAlong(d, this.state.path.node())()
         })
     })
+
+    this.state.usersPlotted = true
   }
 
   translateAlong(d, path) {
@@ -138,9 +153,9 @@ export class GeneratedMountain extends Component {
     const l = path.getTotalLength() * d
     return (d, i, a) => {
         return (t) => {
-            this.state.atLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
-            var p1 = path.getPointAtLength(this.state.atLength),
-                p2 = path.getPointAtLength((this.state.atLength) + this.state.direction),
+            this.state.cameraAtLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
+            var p1 = path.getPointAtLength(this.state.cameraAtLength),
+                p2 = path.getPointAtLength((this.state.cameraAtLength) + this.state.direction),
                 angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
 
             const svgX = p1.x - (window.innerWidth / 2)
@@ -241,10 +256,10 @@ export class GeneratedMountain extends Component {
 
     value = value > .8 ? .8 : value
 
-    let cameraData = value
+    this.state.cameraData = value
 
     this.state.cameraPointer = g.append("g")
-      .data([cameraData])
+      .data([this.state.cameraData])
 
     this.state.pointer = g.append("g")
       .data([value])
@@ -277,10 +292,10 @@ export class GeneratedMountain extends Component {
         })
       
       document.addEventListener("wheel", (e) => {
-        const data = cameraData += (e.deltaX / 100000)
+        const data = this.state.cameraData += (e.deltaX / 100000)
         if (data > .8) return
         this.state.cameraPointer = this.state.cameraPointer.data([data])
-        cameraData = cameraData < 0 ? 0 : cameraData
+        this.state.cameraData = this.state.cameraData < 0 ? 0 : this.state.cameraData
         this.state.cameraPointer
           .transition()
           .duration(0)
@@ -292,13 +307,13 @@ export class GeneratedMountain extends Component {
       new Hammer(this.state.container).on('panleft panright', (e) => {
         let distance = e.distance > 50 ? 50 : e.distance
         if (e.type === 'panleft') {
-          let pranLeftData = cameraData += (distance / 100000)
+          let pranLeftData = this.state.cameraData += (distance / 100000)
           if (pranLeftData > .8) return
           this.state.cameraPointer = this.state.cameraPointer.data([pranLeftData])
         } else {
-          this.state.cameraPointer = this.state.cameraPointer.data([cameraData -= (distance / 100000)])
+          this.state.cameraPointer = this.state.cameraPointer.data([this.state.cameraData -= (distance / 100000)])
         }
-        cameraData = cameraData < 0 ? 0 : cameraData
+        this.state.cameraData = this.state.cameraData < 0 ? 0 : this.state.cameraData
         this.state.cameraPointer
           .transition()
           .duration(0)
@@ -332,8 +347,7 @@ export class GeneratedMountain extends Component {
 
 function mapStateToProperties(state) {
   return {
-    loaded: state.app.loaded,
-    percentage: state.app.user.percentage
+    loaded: state.app.loaded
   }
 }
 

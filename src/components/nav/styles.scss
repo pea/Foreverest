@@ -5,8 +5,8 @@
     left: 0;
     width: 100%;
     min-height: 50px;
-    color: #c1b183;
-    background-color: rgba(0, 0, 0, .01);
+    color: #616479;
+    background-color: rgba(0, 0, 0, .05);
     .title {
         display: table-cell;
         padding: 0 0 0 20px;
@@ -23,7 +23,7 @@
     .line {
         height: 1px;
         margin: 0 13px;
-        background-color: #c1b183;
+        background-color: #969bbb;
         &:nth-child(2),
         &:nth-child(3) {
             margin-top: 5px;

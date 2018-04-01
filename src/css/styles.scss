@@ -7,7 +7,7 @@ body {
     overflow: hidden;
     width: 100vw;
     margin: 0;
-    color: #a99e82;
+    color: #6d707d;
 }
 
 * {
@@ -20,5 +20,6 @@ body {
 .wrapper {
     height: 100vh;
     padding: 60px 0 0 0;
-    background: linear-gradient(to bottom, #fff5d9 0%, #fff5da 100%);
+    background-color: #282b38;
+    background-image: url('../../public/img/stars.png');
 }

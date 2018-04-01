@@ -8,7 +8,7 @@
         position: absolute;
         left: 0;
 
-        fill: #ef6c8c;
+        fill: #1e202f;
     }
     svg {
         transition: transform 1s;
@@ -17,7 +17,7 @@
     .checkpointLabel {
         transform: translate(0, 23px) scale(.7);
 
-        fill: #fff5d9;
+        fill: #b5fffb;
     }
 }
 
@@ -29,7 +29,7 @@
 .tri {
     transform: rotate(180deg) translate(0, 8px);
 
-    fill: #b7516a;
+    fill: #b5fffb;
 }
 
 .camera {
@@ -41,13 +41,13 @@
 .checkpoint {
     transform: rotate(0deg) translate(0, 6px) scale(.8);
 
-    fill: #fff5d9;;
+    fill: #b5fffb;
 }
 
 .userTri {
     transform: rotate(180deg) translate(0, 6px);
 
-    fill: #b7516a;
+    fill: #b5fffb;
 }
 
 .photoLink {
@@ -60,7 +60,7 @@
         transition: opacity .3s;
         opacity: 0;
 
-        fill: #b7516a;
+        fill: #b5fffb;
     }
     &:hover {
         width: 30px;
