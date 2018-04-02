@@ -46,6 +46,9 @@ export class AppContainer extends Component {
           percentage={this.props.user.percentage}
           percentageYearAgo={this.props.user.percentageYearAgo}
           percentageQuarterAgo={this.props.user.percentageQuarterAgo}
+          feet={this.props.user.feet}
+          feetYearAgo={this.props.user.feetYearAgo}
+          feetQuarterAgo={this.props.user.feetQuarterAgo}
           users={this.props.users}
           user={this.props.user} />
         <StatusBar

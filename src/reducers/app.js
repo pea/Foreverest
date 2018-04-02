@@ -4,9 +4,12 @@ const initialState = {
   user: {
     stravaId: 0,
     feet: 0,
+    feetYearAgo: 0,
+    feetQuarterAgo: 0,
     percentage: 0,
     percentageYearAgo: 0,
     percentageQuarterAgo: 0,
+    elevationGain: 0,
     remaining: 0
   },
   users: {}
