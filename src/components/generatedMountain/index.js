@@ -5,9 +5,15 @@ import Hammer from 'hammerjs'
 import ReactDOM from 'react-dom'
 import _ from 'underscore'
 import { connect } from 'react-redux'
+import createState from './_createStage'
 import { loadApp } from 'actions/app'
+import plotCheckpoints from './_plotCheckpoints'
+import plotUsers from './_plotUsers'
 import scrollToWithAnimation from 'scrollto-with-animation'
 import styles from 'components/generatedMountain/style.scss'
+import timeAgoPoints from './_timeAgoPoints'
+import translateAlong from './_translateAlong'
+import translateCameraAlong from './_translateCameraAlong'
 
 type Props = {
   dispatch: () => void,
@@ -30,15 +36,14 @@ export class GeneratedMountain extends Component {
       quarterAgoPointer: {},
       path: {},
       direction: -1,
-      atLength: 0,
-      cameraAtLength: 0,
       container: {},
       svg: {},
       cameraData: 0,
       maxDistance: .8,
       everestPercentage: 5,
       yearAgoLabelFeetLine: '',
-      quarterAgoLabelFeetLine: ''
+      quarterAgoLabelFeetLine: '',
+      timeAgos: {}
     }
     this.state.everestDistance = (this.state.maxDistance / 100) * this.state.everestPercentage
   }
@@ -55,7 +60,12 @@ export class GeneratedMountain extends Component {
       this.props.feetYearAgo,
       this.props.feetQuarterAgo,
     )    
-    this.plotUsers(this.props.users, this.props.user)
+    
+    Object.assign(this.state, 
+      this.props.users,
+      this.props.user,
+      this.state
+    )
   }
 
   componentWillReceiveProps(nextProps) {
@@ -69,28 +79,26 @@ export class GeneratedMountain extends Component {
     if (nextProps.feetYearAgo !== this.props.feetYearAgo
       || nextProps.feetQuarterAgo !== this.props.feetQuarterAgo) {
       if (this.state.initiated === true) {
-        this.updateLabels(
-          nextProps.percentageYearAgo,
-          nextProps.percentageQuarterAgo,
-          nextProps.feet,
-          nextProps.feetYearAgo,
-          nextProps.feetQuarterAgo
-        )
-      } else {
-        this.updateLabels(
-          nextProps.percentageYearAgo,
-          nextProps.percentageQuarterAgo,
-          nextProps.feet,
-          nextProps.feetYearAgo,
-          nextProps.feetQuarterAgo
-        )
+        const timeAgos = timeAgoPoints.init([
+          { percentage: nextProps.percentageYearAgo, feet: nextProps.feet, text: 'Year Ago'},
+          { percentage: nextProps.percentageQuarterAgo, feet: extProps.feetQuarterAgo, text: '¼ Year Ago'},
+        ], this.state, nextProps.feet)
+        Object.assign(this.state, timeAgos)
       }
     }
     if (_.size(nextProps.users) !== _.size(this.props.users)) {
-      this.plotUsers(nextProps.users, this.props.user)
+      Object.assign(this.state, plotUsers(
+        nextProps.users,
+        this.props.user,
+        this.state
+      ))
     }
     if (nextProps.user.stravaId !== this.props.user.stravaId) {
-      this.plotUsers(nextProps.users, nextProps.user)
+      Object.assign(this.state, plotUsers(
+        nextProps.users,
+        nextProps.user,
+        this.state
+      ))
     }
   }
 
@@ -105,7 +113,7 @@ export class GeneratedMountain extends Component {
       .duration(5000)
       .ease(easeExpOut)
       .attrTween("transform", (d) => {
-          return this.translateAlong(d, this.state.path.node())()
+          return translateAlong(d, this.state.path.node(), this.state)()
       })
     this.state.cameraPointer
       .data([value])
@@ -113,126 +121,10 @@ export class GeneratedMountain extends Component {
       .duration(5000)
       .ease(easeExpOut)
       .attrTween("transform", (d) => {
-          return this.translateCameraAlong(d, this.state.path.node())()
+          return translateCameraAlong(d, this.state.path.node(), this.state)()
       })
     this.state.yearAgoLabelFeetLine
       .text
-  }
-
-  updateLabels(percentageYearAgo, percentageQuarterAgo, feet, feetYearAgo, feetQuarterAgo) {
-    const valueYearAgo = (this.state.everestDistance / 100) * percentageYearAgo
-    const valueQuarterAgo = (this.state.everestDistance / 100) * percentageQuarterAgo
-
-    this.state.yearAgoPointer
-      .data([valueYearAgo])
-      .transition()
-      .duration(0)
-      .ease(easeExpOut)
-      .attrTween("transform", (d) => {
-          return this.translateAlong(d, this.state.path.node())()
-      })
-    this.state.quarterAgoPointer
-      .data([valueQuarterAgo])
-      .transition()
-      .duration(0)
-      .ease(easeExpOut)
-      .attrTween("transform", (d) => {
-          return this.translateAlong(d, this.state.path.node())()
-      })
-    this.state.quarterAgoLabelFeetLine
-      .text(`-${feet - feetQuarterAgo} FT`)
-    this.state.yearAgoLabelFeetLine
-      .text(`-${feet - feetYearAgo} FT`)
-  }
-
-  plotUsers(users, user) {
-    if (this.state.usersPlotted) return
-    if (user.stravaId <= 0) return
-    if (_.size(users) == 0) return
-
-    users = users.filter(item => {
-      return parseInt(item.stravaId) !== parseInt(user.stravaId)
-    })
-    
-    users.forEach(item => {
-      const percentage = Math.round(item.elevationGain / 29030 * 100)
-      let position = (this.state.everestDistance / 100) * percentage
-
-      const g = this.state.svg.append("g")
-        .attr('transform', "translate(0,0)")
-
-      const userPointer = g.append("g")
-        .data([position])
-      
-      const user = userPointer
-        .append("path")
-        .attr("class", styles.userTri)
-        .attr('d', symbol().type(symbolTriangle).size(50)())
-
-      const link = userPointer.append("svg:a")
-        .attr("class", styles.photoLink)
-        .attr("target", '_blank')
-        .attr("xlink:href", `https://www.strava.com/athletes/${item.stravaId}`)
-
-      const name = item.displayName.split(' ').reverse()
-
-      name.forEach((nameItem, index) => {
-        link.append("text")
-          .attr('class', styles.displayName)
-          .attr('data-lines', _.size(name))
-          .attr('transform', `translate(0, -${16 + (index * 15)}) scale(.7)`)
-          .attr('text-anchor', "middle")
-          .text(nameItem)
-      })
-
-      const photo = link.append("svg:image")
-        .attr("xlink:href", item.photo)
-        .attr("class", styles.photo)
-
-      userPointer
-        .transition()
-        .duration(0)
-        .ease(easeExpOut)
-        .attrTween("transform", (d) => {
-          return this.translateAlong(d, this.state.path.node())()
-        })
-    })
-
-    this.state.usersPlotted = true
-  }
-
-  translateAlong(d, path) {
-    const l = path.getTotalLength() * d
-    return (d, i, a) => {
-        return (t) => {
-            this.state.atLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
-            var p1 = path.getPointAtLength(this.state.atLength),
-                p2 = path.getPointAtLength((this.state.atLength) + this.state.direction),
-                angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
-            return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
-        }
-    }
-  }
-
-  translateCameraAlong(d, path) {
-    const l = path.getTotalLength() * d
-    return (d, i, a) => {
-        return (t) => {
-            this.state.cameraAtLength = this.state.direction === 1 ? (t * l) : (l - (t * l))
-            var p1 = path.getPointAtLength(this.state.cameraAtLength),
-                p2 = path.getPointAtLength((this.state.cameraAtLength) + this.state.direction),
-                angle = Math.atan2(p2.y - p1.y, p2.x - p1.x) * 180 / Math.PI
-
-            const svgX = p1.x - (window.innerWidth / 2)
-            let svgY = this.state.container.scrollHeight - p1.y - (window.innerHeight / 2)
-
-            svgY = svgY < 0 ? 0 : svgY
-
-            this.state.container.querySelector('svg').style.transform = "translate(-" + svgX + "px," + svgY + "px)"
-
-            return "translate(" + p1.x + "," + p1.y + ")rotate(" + angle + ")"
-        }
-    }
   }
 
   init(percentage, percentageYearAgo, percentageQuarterAgo, feet, feetYearAgo, feetQuarterAgo) {
@@ -241,142 +133,40 @@ export class GeneratedMountain extends Component {
 
     this.state.container = ReactDOM.findDOMNode(this.refs.container)
 
-    var 
-      width = 100000,
-      height = window.screen.height * 10,
+    Object.assign(this.state, createState(this.state, this.refs.chart))
 
-      x = scaleLinear()
-        .domain([0, 1000])
-        .range([10, width]),
+    plotCheckpoints(this.state)
+    
+    const timeAgos = timeAgoPoints.init([
+      { percentage: percentageYearAgo, feet: feetYearAgo, text: 'Year Ago'},
+      { percentage: percentageQuarterAgo, feet: feetQuarterAgo, text: '¼ Year Ago'},
+    ], this.state, feet)
+    Object.assign(this.state, timeAgos)
 
-      y = scaleLinear()
-        .domain([0, 1])
-        .range([height, 0]),
+    let distance = (this.state.everestDistance / 100) * percentage
 
-      data = range(x.domain()[1]).map(function (value = 0, index) {
+    distance = distance > this.state.maxDistance ? this.state.maxDistance : distance
 
-        function getRandomArbitrary(min, max) {
-          return Math.random() * (max - min) + min
-        }
+    this.state.cameraData = distance
 
-        return getRandomArbitrary(value + 1, value + 5) / 1000
-      })
+    const g = this.state.svg.append('g')
+      .attr('transform', 'translate(0,0)')
 
-    data[0] = 0
-    data[1000] = 0
-
-    const theline = line()
-      .curve(curveBasis)
-      .x(function (d, i) {
-        return x(i)
-      })
-      .y(y)
-
-    this.state.svg = select(ReactDOM.findDOMNode(this.refs.chart))
-      .append("svg")
-      .attr('width', width)
-      .attr('height', height)
-
-    const g = this.state.svg.append("g")
-    .attr('transform', "translate(0,0)")
-
-    this.state.path = g.append("path")
-      .datum(data)
-      .attr('class', styles.line)
-      .attr('ref', 'line')
-      .attr('d', theline)
-
-    const checkpoints = [
-      { percentage: 50, 'name': '50% Everest'},
-      { percentage: 100, 'name': 'Everest'}
-    ]
-
-    checkpoints.forEach(item => {
-      let position = (this.state.everestDistance / 100) * item.percentage
-      const checkpointPointer = g.append("g")
-        .data([position])
-      
-      const checkpoint = checkpointPointer
-        .append("path")
-        .attr("class", styles.checkpoint)
-        .attr('d', symbol().type(symbolTriangle).size(100)())
-      
-      const label = checkpointPointer.append("text")
-          .attr('transform', "translate(0, -10)")
-          .attr('class', styles.checkpointLabel)
-          .attr('text-anchor', "middle")
-          .text(item.name)
-
-      checkpointPointer
-        .transition()
-        .duration(0)
-        .ease(easeExpOut)
-        .attrTween("transform", (d) => {
-          return this.translateAlong(d, this.state.path.node())()
-        })
-    })
-
-    let value = (this.state.everestDistance / 100) * percentage
-    let valueYearAgo = (this.state.everestDistance / 100) * percentageYearAgo
-    let valueQuarterAgo = (this.state.everestDistance / 100) * percentageQuarterAgo
-
-    value = value > this.state.maxDistance ? this.state.maxDistance : value
-    valueYearAgo = valueYearAgo > this.state.maxDistance ? this.state.maxDistance : valueYearAgo
-    valueQuarterAgo = valueQuarterAgo > this.state.maxDistance ? this.state.maxDistance : valueQuarterAgo
-
-    this.state.cameraData = value
-
-    this.state.cameraPointer = g.append("g")
+    this.state.cameraPointer = g.append('g')
       .data([this.state.cameraData])
 
-    this.state.pointer = g.append("g")
-      .data([value])
+    this.state.pointer = g.append('g')
+      .data([distance])
       .data([this.state.cameraData])
-
-    this.state.yearAgoPointer = g.append("g")
-      .data([valueYearAgo])
-
-    this.state.quarterAgoPointer = g.append("g")
-      .data([valueQuarterAgo])
 
     const tri = this.state.pointer
-      .append("path")
-      .attr("class", styles.tri)
+      .append('path')
+      .attr('class', styles.tri)
       .attr('d', symbol().type(symbolTriangle).size(100)())
 
-    const triYearAgo = this.state.yearAgoPointer
-      .append("path")
-      .attr("class", styles.triYearAgo)
-      .attr('d', symbol().type(symbolTriangle).size(50)())
-
-    const yearAgoLabel = this.state.yearAgoPointer.append("text")
-      .attr('class', styles.yearAgoLabel)
-      .attr('text-anchor', "middle")
-      .text('Year Ago')
-
-    this.state.yearAgoLabelFeetLine = this.state.yearAgoPointer.append("text")
-      .attr('class', styles.yearAgoLabelLine2)
-      .attr('text-anchor', "middle")
-      .text(`-${feet - feetYearAgo} FT`)
-
-    const triQuarterAgo = this.state.quarterAgoPointer
-      .append("path")
-      .attr("class", styles.triQuarterAgo)
-      .attr('d', symbol().type(symbolTriangle).size(50)())
-
-    const quarterAgoLabel = this.state.quarterAgoPointer.append("text")
-      .attr('class', styles.quarterAgoLabel)
-      .attr('text-anchor', "middle")
-      .text('¼ Year Ago')
-
-    this.state.quarterAgoLabelFeetLine = this.state.quarterAgoPointer.append("text")
-      .attr('class', styles.quarterAgoLabelLine2)
-      .attr('text-anchor', "middle")
-      .text(`-${feet - feetQuarterAgo} FT`)
-
     const camera = this.state.cameraPointer
-      .append("path")
-      .attr("class", styles.camera)
+      .append('path')
+      .attr('class', styles.camera)
       .attr('d', symbol().type(symbolTriangle).size(100)())
 
     const transition = () => {
@@ -384,37 +174,19 @@ export class GeneratedMountain extends Component {
       this.state.pointer.transition()
         .duration(5000)
         .ease(easeExpOut)
-        .attrTween("transform", (d) => {
-            return this.translateAlong(d, this.state.path.node())()
+        .attrTween('transform', (d) => {
+            return translateAlong(d, this.state.path.node(), this.state)()
         })
-
-      if (percentageYearAgo > 0) {
-        this.state.yearAgoPointer.transition()
-          .duration(0)
-          .ease(easeExpOut)
-          .attrTween("transform", (d) => {
-              return this.translateAlong(d, this.state.path.node())()
-          })
-      }
-
-      if (percentageQuarterAgo > 0) {
-        this.state.quarterAgoPointer.transition()
-          .duration(0)
-          .ease(easeExpOut)
-          .attrTween("transform", (d) => {
-              return this.translateAlong(d, this.state.path.node())()
-          })
-      }
 
         this.state.cameraPointer
         .transition()
         .duration(5000)
         .ease(easeExpOut)
-        .attrTween("transform", (d) => {
-          return this.translateCameraAlong(d, this.state.path.node())()
+        .attrTween('transform', (d) => {
+          return translateCameraAlong(d, this.state.path.node(), this.state)()
         })
       
-      document.addEventListener("wheel", (e) => {
+      document.addEventListener('wheel', (e) => {
         const data = this.state.cameraData += (e.deltaX / 100000)
         if (data > this.state.maxDistance) return
         this.state.cameraPointer = this.state.cameraPointer.data([data])
@@ -422,8 +194,8 @@ export class GeneratedMountain extends Component {
         this.state.cameraPointer
           .transition()
           .duration(0)
-          .attrTween("transform", (d) => {
-            return this.translateCameraAlong(d, this.state.path.node())()
+          .attrTween('transform', (d) => {
+            return translateCameraAlong(d, this.state.path.node(), this.state)()
           })
       })
 
@@ -441,7 +213,7 @@ export class GeneratedMountain extends Component {
           .transition()
           .duration(0)
           .attrTween('transform', (d) => {
-            return this.translateCameraAlong(d, this.state.path.node())()
+            return translateCameraAlong(d, this.state.path.node(), this.state)()
           }) 
       });
       

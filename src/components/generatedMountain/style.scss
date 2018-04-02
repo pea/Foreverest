@@ -32,13 +32,7 @@
     fill: #b5fffb;
 }
 
-.triYearAgo {
-    transform: rotate(180deg) translate(0, 8px);
-
-    fill: #b5fffb;
-}
-
-.triQuarterAgo {
+.triTimeAgo {
     transform: rotate(180deg) translate(0, 8px);
 
     fill: #b5fffb;
@@ -92,25 +86,13 @@
     }
 }
 
-.yearAgoLabel {
+.timeAgoLabel {
     transform: translate(0, 14px) scale(.7);
 
     fill: #b5fffb;
 }
 
-.yearAgoLabelLine2 {
-    transform: translate(0, 29px) scale(.6);
-
-    fill: #b5fffb;
-}
-
-.quarterAgoLabel {
-    transform: translate(0, 14px) scale(.7);
-
-    fill: #b5fffb;
-}
-
-.quarterAgoLabelLine2 {
+.timeAgoLabelLine2 {
     transform: translate(0, 29px) scale(.6);
 
     fill: #b5fffb;
