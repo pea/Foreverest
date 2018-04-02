@@ -81,7 +81,7 @@ export class GeneratedMountain extends Component {
       if (this.state.initiated === true) {
         const timeAgos = timeAgoPoints.init([
           { percentage: nextProps.percentageYearAgo, feet: nextProps.feet, text: 'Year Ago'},
-          { percentage: nextProps.percentageQuarterAgo, feet: extProps.feetQuarterAgo, text: '¼ Year Ago'},
+          { percentage: nextProps.percentageQuarterAgo, feet: nextProps.feetQuarterAgo, text: '¼ Year Ago'},
         ], this.state, nextProps.feet)
         Object.assign(this.state, timeAgos)
       }
