@@ -32,6 +32,18 @@
     fill: #b5fffb;
 }
 
+.triYearAgo {
+    transform: rotate(180deg) translate(0, 8px);
+
+    fill: #b5fffb;
+}
+
+.triQuarterAgo {
+    transform: rotate(180deg) translate(0, 8px);
+
+    fill: #b5fffb;
+}
+
 .camera {
     transform: rotate(180deg) translate(0, 8px);
 
@@ -52,9 +64,9 @@
 
 .photoLink {
     .photo {
-        width: 25px;
+        width: 20px;
         transition: transform .5s;
-        transform: translate(-12.5px, -43px);
+        transform: translate(-10px, -37px);
     }
     .displayName {
         transition: opacity .3s;
@@ -66,16 +78,28 @@
         width: 30px;
         cursor: pointer;
         .displayName[data-lines='1'] + .photo {
-            transform: translate(-12.5px, -55px);
+            transform: translate(-10px, -51px);
         }
         .displayName[data-lines='2'] + .photo {
-            transform: translate(-12.5px, -68px);
+            transform: translate(-10px, -64px);
         }
         .displayName[data-lines='3'] + .photo {
-            transform: translate(-12.5px, -83px);
+            transform: translate(-10px, -79px);
         }
         .displayName {
             opacity: 1;
         }
     }
+}
+
+.yearAgoLabel {
+    transform: translate(0, 14px) scale(.7);
+
+    fill: #b5fffb;
+}
+
+.quarterAgoLabel {
+    transform: translate(0, 14px) scale(.7);
+
+    fill: #b5fffb;
 }

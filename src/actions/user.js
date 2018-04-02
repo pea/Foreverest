@@ -10,6 +10,8 @@ export function updateUserSuccess (data) {
       stravaId: data.stravaId,
       feet: Math.round(data.elevationGain),
       percentage: Math.round(data.elevationGain / 29030 * 100),
+      percentageYearAgo: Math.round(data.elevationGainYearAgo / 29030 * 100),
+      percentageQuarterAgo: Math.round(data.elevationGainQuarterAgo / 29030 * 100),
       remaining: Math.round(29030 - +data.elevationGain)
     }
   }
@@ -44,6 +46,8 @@ export function getUserSuccess (data) {
       stravaId: data.stravaId,
       feet: Math.round(data.elevationGain),
       percentage: Math.round(data.elevationGain / 29030 * 100),
+      percentageYearAgo: Math.round(data.elevationGainYearAgo / 29030 * 100),
+      percentageQuarterAgo: Math.round(data.elevationGainQuarterAgo / 29030 * 100),
       remaining: Math.round(29030 - +data.elevationGain)
     }
   }

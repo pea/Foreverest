@@ -42,8 +42,16 @@ export class AppContainer extends Component {
 
     return (
       <div>
-        <GeneratedMountain percentage={this.props.user.percentage} users={this.props.users} user={this.props.user} />
-        <StatusBar feet={this.props.user.feet} remaining={this.props.user.remaining} percentage={this.props.user.percentage} />
+        <GeneratedMountain
+          percentage={this.props.user.percentage}
+          percentageYearAgo={this.props.user.percentageYearAgo}
+          percentageQuarterAgo={this.props.user.percentageQuarterAgo}
+          users={this.props.users}
+          user={this.props.user} />
+        <StatusBar
+          feet={this.props.user.feet}
+          remaining={this.props.user.remaining}
+          percentage={this.props.user.percentage} />
       </div>
     )
   }

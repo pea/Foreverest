@@ -26,6 +26,9 @@ export function getUsers (req, res, passport, next) {
 export async function updateUserElevation (req, res, passport, next) {
   let updateTime = Date.now() / 1000
   let elevationGain
+  let elevationGainYearAgo
+  let elevationGainQuarterAgo
+  let elevationData
   let user
 
   try {
@@ -41,10 +44,14 @@ export async function updateUserElevation (req, res, passport, next) {
         {
           stravaId: req.user.id,
           elevationGain: 0,
+          elevationGainYearAgo: 0,
+          elevationGainQuarterAgo: 0,
           updateTime: 946684800
         }
       )
       user.elevationGain = 0
+      user.elevationGainYearAgo = 0
+      user.elevationGainQuarterAgo = 0
       user.updateTime = 946684800
     } catch (err) {
       throw new Error(err)
@@ -53,7 +60,10 @@ export async function updateUserElevation (req, res, passport, next) {
 
   if ((updateTime - user.updateTime) > 60) {
     try {
-      elevationGain = await stravaController.returnElevationGain(req, res, passport, next)
+      elevationData = await stravaController.returnElevationGain(req, res, passport, next)
+      elevationGain = elevationData.totalElevationGain
+      elevationGainYearAgo = elevationData.totalElevationGainYearAgo
+      elevationGainQuarterAgo = elevationData.totalElevationGainQuarterAgo
     } catch (err) {
       throw new Error(err)
     }
@@ -64,6 +74,8 @@ export async function updateUserElevation (req, res, passport, next) {
         {
           stravaId: req.user.id,
           elevationGain: elevationGain,
+          elevationGainYearAgo: elevationGainYearAgo,
+          elevationGainQuarterAgo: elevationGainQuarterAgo,
           updateTime
         }
       )
@@ -72,12 +84,16 @@ export async function updateUserElevation (req, res, passport, next) {
     }
   } else {
     elevationGain = user.elevationGain
+    elevationGainYearAgo = user.elevationGainYearAgo
+    elevationGainQuarterAgo = user.elevationGainQuarterAgo
     updateTime = user.updateTime
   }
 
   return {
     stravaId: req.user.id,
     elevationGain,
+    elevationGainYearAgo,
+    elevationGainQuarterAgo,
     timeSinceUpdate: (Date.now() / 1000) - updateTime
   }
 }

@@ -5,6 +5,8 @@ const initialState = {
     stravaId: 0,
     feet: 0,
     percentage: 0,
+    percentageYearAgo: 0,
+    percentageQuarterAgo: 0,
     remaining: 0
   },
   users: {}
