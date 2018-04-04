@@ -37,7 +37,6 @@ export function updateUser () {
       })
       .catch(() => {
         store.dispatch(updateUserFail())
-        store.dispatch(push('/connect'))
       })
   }
 }
@@ -96,7 +95,7 @@ export function getUsersFail () {
 export function getUsers () {
   return function (dispatch) {
     return request
-      .get(`${config.api.endpoint}/user/all`)
+      .get(`${config.api.endpoint}/users`)
       .withCredentials()
       .then((res) => {
         const data = JSON.parse(res.text)

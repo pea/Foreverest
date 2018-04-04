@@ -39,22 +39,28 @@ export class AppContainer extends Component {
     if (!this.props.loaded) {
       return null
     }
+    
 
     return (
       <div>
-        <GeneratedMountain
-          percentage={this.props.user.percentage}
-          percentageYearAgo={this.props.user.percentageYearAgo}
-          percentageQuarterAgo={this.props.user.percentageQuarterAgo}
-          feet={this.props.user.feet}
-          feetYearAgo={this.props.user.feetYearAgo}
-          feetQuarterAgo={this.props.user.feetQuarterAgo}
-          users={this.props.users}
-          user={this.props.user} />
-        <StatusBar
-          feet={this.props.user.feet}
-          remaining={this.props.user.remaining}
-          percentage={this.props.user.percentage} />
+        <div className={this.props.user.stravaId > 0 ? styles.accomodateStatusBar : ''}>
+          <GeneratedMountain
+            percentage={this.props.user.percentage}
+            percentageYearAgo={this.props.user.percentageYearAgo}
+            percentageQuarterAgo={this.props.user.percentageQuarterAgo}
+            feet={this.props.user.feet}
+            feetYearAgo={this.props.user.feetYearAgo}
+            feetQuarterAgo={this.props.user.feetQuarterAgo}
+            users={this.props.users}
+            user={this.props.user} />
+        </div>
+        
+        {this.props.user.feet > 0 &&
+          <StatusBar
+            feet={this.props.user.feet}
+            remaining={this.props.user.remaining}
+            percentage={this.props.user.percentage} />
+        }
       </div>
     )
   }

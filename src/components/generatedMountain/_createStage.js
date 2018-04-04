@@ -3,7 +3,7 @@ import { curveBasis, line, range, scaleLinear, select } from 'd3'
 import ReactDOM from 'react-dom'
 import styles from 'components/generatedMountain/style.scss'
 
-export default (state, chart) => {
+export default (state, chart, accomodateStatusBar) => {
   const width = 100000
   const height = window.screen.height * 10
 
@@ -46,6 +46,8 @@ export default (state, chart) => {
     .attr('class', styles.line)
     .attr('ref', 'line')
     .attr('d', theline)
+
+  ReactDOM.findDOMNode(state.container).scrollTop = '99999'
 
   return { svg, path }
 }

@@ -13,6 +13,8 @@ import translateAlong from './_translateAlong'
  */
 export function init (timeAgos, state, feet) {
   timeAgos.forEach((item, index) => {
+    if (item.percentage === 0) return
+
     let distance = (state.everestDistance / 100) * item.percentage
     timeAgos[index].distance = distance > state.maxDistance ? state.maxDistance : distance
 

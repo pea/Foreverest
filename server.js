@@ -6,6 +6,7 @@ const passport = require('passport')
 const StravaStrategy = require('passport-strava-oauth2').Strategy
 const authRoute = require('./routes/auth.js')(passport)
 const userRoute = require('./routes/user.js')(passport)
+const usersRoute = require('./routes/users.js')(passport)
 const UserModel = require('./models/user.js')
 const cookieParser = require('cookie-parser')
 const session = require('express-session')
@@ -77,6 +78,7 @@ app.use(passport.session())
 
 app.use('/api/auth', authRoute)
 app.use('/api/user', cors({origin: config.clientUrl, credentials: true}), isAuthenticated, userRoute)
+app.use('/api/users', cors({origin: config.clientUrl, credentials: true}), usersRoute)
 
 app.use('*', (req, res) => {
   res.sendFile(path.join(dist, 'index.html'))

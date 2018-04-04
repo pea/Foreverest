@@ -14,6 +14,7 @@ export default (state) => {
 
   checkpoints.forEach(item => {
     let position = (state.everestDistance / 100) * item.percentage
+
     const checkpointPointer = g.append('g')
       .data([position])
 
@@ -28,6 +29,7 @@ export default (state) => {
       .attr('text-anchor', 'middle')
       .text(item.name)
 
+    state.direction *= -1
     checkpointPointer
       .transition()
       .duration(0)

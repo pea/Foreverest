@@ -15,13 +15,14 @@ import translateAlong from './_translateAlong'
  * @return object Update to the state in index.js
  */
 export default (users, user, state) => {
-  if (user.stravaId <= 0) return
   if (_.size(users) === 0) return
   if (state.usersPlotted) return
 
-  users = users.filter(item => {
-    return parseInt(item.stravaId) !== parseInt(user.stravaId)
-  })
+  if (user.stravaId > 0) {
+    users = users.filter(item => {
+      return parseInt(item.stravaId) !== parseInt(user.stravaId)
+    })
+  }
 
   users.forEach(item => {
     const percentage = Math.round(item.elevationGain / 29030 * 100)
@@ -58,11 +59,13 @@ export default (users, user, state) => {
       .attr('xlink:href', item.photo)
       .attr('class', styles.photo)
 
+    const duration = user.stravaId > 0 ? 0 : percentage * 100
+
     userPointer
       .transition()
-      .duration(0)
+      .duration(duration)
       .ease(easeExpOut)
-      .attrTween("transform", (d) => {
+      .attrTween('transform', (d) => {
         return translateAlong(d, state.path.node(), state)()
       })
   })
