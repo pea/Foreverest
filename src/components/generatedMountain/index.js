@@ -111,7 +111,11 @@ export class GeneratedMountain extends Component {
 
     this.state.cameraData = value
 
-    if (_.size(this.state.pointer) > 0) {
+    if (!_.size(this.state.pointer) > 0) {
+      distance = (this.state.everestDistance / 100) * percentage
+      distance = distance > this.state.maxDistance ? this.state.maxDistance : distance
+      plotUserPointer(this.state, distance)
+    } else {
       this.state.pointer
         .data([value])
         .transition()
@@ -120,7 +124,8 @@ export class GeneratedMountain extends Component {
         .attrTween("transform", (d) => {
             return translateAlong(d, this.state.path.node(), this.state)()
         })
-    }
+    
+      }
     this.state.cameraPointer
       .data([value])
       .transition()
