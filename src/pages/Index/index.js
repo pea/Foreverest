@@ -21,12 +21,18 @@ type Props = {
 export class AppContainer extends Component {
   constructor(props) {
     super(props)
+    this.state = {
+      showContinueButton: false
+    }
   }
 
   componentDidMount() {
     this.props.dispatch(loadApp())
     this.props.dispatch(updatePageTitle('Foreverest'))
-    this.props.dispatch(getUser())
+    this.props.dispatch(getUser()).then(() => {
+      this.state.showContinueButton = true
+      this.setState(this.state)
+    })
   }
 
   props: Props
@@ -49,7 +55,13 @@ export class AppContainer extends Component {
               <p>
                 Connect to Strava and see how far you can cycle up the infinitely tall Mount Foreverest.
               </p>
-              <Link to={_.isEmpty(this.props.user) ? '/connect' : '/progress'} className={styles.button}>Continue</Link>
+              {this.state.showContinueButton &&
+                <div>
+                  {this.props.user.stravaId == 0 && <Link to={'/progress'} className={styles.button}>Take a Look</Link>}
+                  {this.props.user.stravaId > 0 && <Link to={'/progress'} className={styles.button}>Continue</Link>}
+                </div>
+              }
+                
             </div>
           </div>
           <div className={[gridStyles.col, gridStyles.fillWidth, styles.featureCol, gridStyles.smallestHide, gridStyles.smallerHide, gridStyles.smallHide].join(' ')} />

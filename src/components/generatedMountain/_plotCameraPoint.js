@@ -43,14 +43,14 @@ export default (state, distance) => {
   new Hammer(state.container).on('panleft panright', (e) => {
     let distance = e.distance > 50 ? 50 : e.distance
     if (e.type === 'panleft') {
-      let pranLeftData = this.cameraData += (distance / 100000)
+      let pranLeftData = cameraData += (distance / 100000)
       if (pranLeftData > state.maxDistance) return
-      this.cameraPointer = this.cameraPointer.data([pranLeftData])
+      cameraPointer = cameraPointer.data([pranLeftData])
     } else {
-      this.cameraPointer = this.cameraPointer.data([this.cameraData -= (distance / 100000)])
+      cameraPointer = cameraPointer.data([cameraData -= (distance / 100000)])
     }
-    this.cameraData = this.cameraData < 0 ? 0 : this.cameraData
-    this.cameraPointer
+    cameraData = cameraData < 0 ? 0 : cameraData
+    cameraPointer
       .transition()
       .duration(0)
       .attrTween('transform', (d) => {
