@@ -6,11 +6,11 @@ import { Link } from 'react-router-dom'
 import _ from 'underscore'
 import config from 'config'
 import { connect } from 'react-redux'
-import { getUser } from 'actions/user'
 import gridStyles from 'css/adaptivegrid.scss'
 import { push } from 'connected-react-router'
 import store from '../../store'
 import styles from 'pages/Index/styles.scss'
+import { updateUser } from 'actions/user'
 
 type Props = {
   dispatch: () => void,
@@ -29,10 +29,11 @@ export class AppContainer extends Component {
   componentDidMount() {
     this.props.dispatch(loadApp())
     this.props.dispatch(updatePageTitle('Foreverest'))
-    this.props.dispatch(getUser()).then(() => {
-      this.state.showContinueButton = true
-      this.setState(this.state)
-    })
+    this.props.dispatch(updateUser())
+      .then(() => {
+        this.state.showContinueButton = true
+        this.setState(this.state)
+      })
   }
 
   props: Props
