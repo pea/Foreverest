@@ -3,6 +3,7 @@ const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
+const SentryCliPlugin = require('@sentry/webpack-plugin')
 
 const stylesheetsLoaders = [{
   loader: 'css-loader',
@@ -38,7 +39,12 @@ module.exports = {
     htmlWebpackPlugin,
     definePlugin,
     uglifyPlugin,
-    compressionPlugin
+    compressionPlugin,
+    new SentryCliPlugin({
+      include: '.',
+      ignore: ['node_modules', 'webpack.config.js', 'webpack.production.js'],
+      release: 'b5a5780'
+    })
   ],
   resolve: {
     modules: ['node_modules', path.join(__dirname, 'src')]

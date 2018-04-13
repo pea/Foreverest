@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const SentryCliPlugin = require('@sentry/webpack-plugin')
 
 const htmlWebpackPlugin = new HtmlWebpackPlugin({ template: 'index.html' })
 const definePlugin = new webpack.DefinePlugin({
@@ -25,7 +26,15 @@ module.exports = {
     filename: '[hash].js'
   },
   devtool: 'source-map',
-  plugins: [htmlWebpackPlugin, definePlugin],
+  plugins: [
+    htmlWebpackPlugin,
+    definePlugin,
+    new SentryCliPlugin({
+      include: '.',
+      ignore: ['node_modules', 'webpack.config.js', 'webpack.production.js'],
+      dryRun: true,
+      release: 'b5a5780'
+    })],
   resolve: {
     modules: ['node_modules', path.join(__dirname, 'src')]
   },

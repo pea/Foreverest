@@ -31,8 +31,12 @@ export class AppContainer extends Component {
   componentDidMount() {
     this.props.dispatch(loadApp())
     this.props.dispatch(updatePageTitle(''))
-    this.props.dispatch(updateUser())
     this.props.dispatch(getUsers())
+    this.props.dispatch(updateUser())
+      .then(() => {
+        this.state.showGeneratedMountain = true
+        this.setState(this.state)
+      })
   }
 
   props: Props
@@ -44,19 +48,20 @@ export class AppContainer extends Component {
     
     return (
       <div>
-        <div className={this.props.user.stravaId > 0 ? styles.accomodateStatusBar : ''}>
-          <GeneratedMountain
-            percentage={this.props.user.percentage}
-            percentageYearAgo={this.props.user.percentageYearAgo}
-            percentageQuarterAgo={this.props.user.percentageQuarterAgo}
-            feet={this.props.user.feet}
-            feetYearAgo={this.props.user.feetYearAgo}
-            feetQuarterAgo={this.props.user.feetQuarterAgo}
-            users={this.props.users}
-            user={this.props.user} />
-        </div>
-
-        {this.props.user.feet > 0 &&
+        {this.state.showGeneratedMountain &&
+          <div className={this.props.user.stravaId > 0 ? styles.accomodateStatusBar : ''}>
+            <GeneratedMountain
+              percentage={this.props.user.percentage}
+              percentageYearAgo={this.props.user.percentageYearAgo}
+              percentageQuarterAgo={this.props.user.percentageQuarterAgo}
+              feet={this.props.user.feet}
+              feetYearAgo={this.props.user.feetYearAgo}
+              feetQuarterAgo={this.props.user.feetQuarterAgo}
+              users={this.props.users}
+              user={this.props.user} />
+          </div>
+        }
+        {this.state.showGeneratedMountain && this.props.user.feet > 0 &&
           <StatusBar
             feet={this.props.user.feet}
             remaining={this.props.user.remaining}

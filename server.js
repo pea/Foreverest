@@ -14,6 +14,9 @@ const bodyParser = require('body-parser')
 const methodOverride = require('method-override')
 const config = require('./config').default
 require('dotenv').config()
+const Raven = require('raven')
+
+Raven.config('https://67062895fce848e6bb63587d840a6b05@sentry.io/1081440').install()
 
 process.env.STRAVA_ACCESS_TOKEN = config.strava.accessToken
 process.env.STRAVA_CLIENT_ID = config.strava.clientId
@@ -62,6 +65,7 @@ app.set('trust proxy', 1)
 const port = process.env.PORT ? process.env.PORT : 3000
 const dist = path.join(__dirname, 'dist')
 
+app.use(Raven.requestHandler())
 app.use(express.static(dist))
 app.use(cookieParser('L}L+Gfx(2of7Gu7Z'))
 app.use(bodyParser.json())
@@ -75,6 +79,8 @@ app.use(session({
 }))
 app.use(passport.initialize())
 app.use(passport.session())
+
+app.use(Raven.errorHandler())
 
 app.use('/api/auth', authRoute)
 app.use('/api/user', cors({origin: config.clientUrl, credentials: true}), isAuthenticated, userRoute)

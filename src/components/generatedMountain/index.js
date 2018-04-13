@@ -106,6 +106,7 @@ export class GeneratedMountain extends Component {
   }
 
   update(percentage) {
+    let distance = 0
     if (percentage == 0) return
     const value = (this.state.everestDistance / 100) * percentage
 
